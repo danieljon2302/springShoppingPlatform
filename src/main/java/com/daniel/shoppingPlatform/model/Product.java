@@ -2,11 +2,14 @@ package com.daniel.shoppingPlatform.model;
 
 import java.sql.Timestamp;
 
+import com.daniel.shoppingPlatform.constant.ProductCategory;
+
 public class Product {
 
 	private Integer productId;
 	private String productName;
-	private String category;
+//	用String無法清楚展現分類, 故將宣告型別為category Enum型別
+	private ProductCategory category;
 	private String imageUrl;
 	private Integer price;
 	private Integer stock;
@@ -25,10 +28,10 @@ public class Product {
 	public void setProductName(String productName) {
 		this.productName = productName;
 	}
-	public String getCategory() {
+	public ProductCategory getCategory() {
 		return category;
 	}
-	public void setCategory(String category) {
+	public void setCategory(ProductCategory category) {
 		this.category = category;
 	}
 	public String getImageUrl() {
