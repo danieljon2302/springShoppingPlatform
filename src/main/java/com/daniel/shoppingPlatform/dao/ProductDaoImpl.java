@@ -72,4 +72,26 @@ public class ProductDaoImpl implements ProductDao {
 		return productId;
 	}
 
+	@Override
+	public void updateProduct(Integer productId, ProductRequest productRequest) {
+		String sql = "UPDATE mall.product SET product_name = :productName,category = :category, image_url = :imageUrl, "+
+					"price = :price, stock =:stock, description = :description, last_modified_date = :lastModifiedDate "+
+					"WHERE product_id = :productId";
+
+		Map<String, Object> map = new HashMap<>();
+		map.put("productId",productId);
+		map.put("productName",productRequest.getProductName());
+		map.put("category",productRequest.getCategory().toString());
+		//.toString() 是為了將Enum值轉換成String後, 將要update的資料再丟給sql( sql中category適用string宣告)
+		map.put("imageUrl",productRequest.getImageUrl());
+		map.put("price",productRequest.getPrice());
+		map.put("stock",productRequest.getStock());
+		map.put("description",productRequest.getDescription());
+		
+		map.put("lastModifiedDate",new java.util.Date());
+		
+		namedParameterJdbcTemplate.update(sql, map);
+		
+	}
+
 }

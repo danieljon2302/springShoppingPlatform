@@ -7,7 +7,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.daniel.shoppingPlatform.model.Product;
@@ -35,11 +37,31 @@ public class ProductController {
 
 	@PostMapping("/products")
 	public ResponseEntity<Product> createProduct(@RequestBody @Valid ProductRequest productRequest){
+		//@RequestBody獲取在requestBody中的值, @Valid驗證vo的annotation
 		Integer productId = productService.createProduct(productRequest);
 		
 		Product product = productService.getProductById(productId);
 		
 		return ResponseEntity.status(HttpStatus.CREATED).body(product);
 
+	}
+	
+	@PutMapping("/products/{productId}")
+	public ResponseEntity<Product> updateProduct(@PathVariable Integer productId, 
+												@RequestBody @Valid ProductRequest productRequest){
+		//step1:判斷此須更新id是否存在資料庫中
+		Product product = productService.getProductById(productId);
+		
+		if(product == null) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+		}
+		
+		//step2:經由此id及json內容更新sql資料
+		productService.updateProduct(productId, productRequest);
+		
+		Product updateProduct = productService.getProductById(productId);
+		
+		return ResponseEntity.status(HttpStatus.OK).body(updateProduct);
+		
 	}
 }
