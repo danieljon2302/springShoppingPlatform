@@ -26,7 +26,7 @@ public class ProductRowMapper implements RowMapper<Product> {
 		ProductCategory category = ProductCategory.valueOf(categoryStr);
 		product.setCategory(category);
 		//一行解決:product.setCategory(ProductCategory.valueOf(rs.getString("category")));
-		
+		//若在SQL拿到的資料沒有對應enum的值, 則有可能資料污染, 故enum為判別的好工具
 		product.setImageUrl(rs.getString("image_url"));
 		product.setPrice(rs.getInt("price"));
 		product.setStock(rs.getInt("stock"));

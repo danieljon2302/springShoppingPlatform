@@ -5,6 +5,8 @@ import org.springframework.stereotype.Component;
 
 import com.daniel.shoppingPlatform.dao.ProductDao;
 import com.daniel.shoppingPlatform.model.Product;
+
+import dto.ProductRequest;
 @Component
 public class ProductServiceImpl implements ProductService {
 
@@ -15,6 +17,12 @@ public class ProductServiceImpl implements ProductService {
 	public Product getProductById(Integer productId) {
 		
 		return productDao.getProductById(productId);
+	}
+
+	@Override
+	public Integer createProduct(ProductRequest productRequest) {
+		
+		return productDao.createProduct(productRequest);
 	}
 
 }
