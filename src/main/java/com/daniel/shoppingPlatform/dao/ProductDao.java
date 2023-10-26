@@ -2,13 +2,14 @@ package com.daniel.shoppingPlatform.dao;
 
 import java.util.List;
 
+import com.daniel.shoppingPlatform.constant.ProductCategory;
 import com.daniel.shoppingPlatform.model.Product;
 
 import dto.ProductRequest;
 
 public interface ProductDao {
 	
-	List<Product> getProducts();
+	List<Product> getProducts(ProductCategory category, String search);
 	
 	Product getProductById(Integer productId);
 	
