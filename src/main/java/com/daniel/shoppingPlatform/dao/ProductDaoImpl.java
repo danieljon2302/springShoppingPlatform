@@ -47,8 +47,9 @@ public class ProductDaoImpl implements ProductDao {
 			//map.put("search", "%"+search+"%");
 			//加上%在前ex: 代表在資料庫中, "最後"有接上蘋果兩字的, 就是目標資料(％蘋果), 前後都加代表整個資料有蘋果就是目標資料
 		}
-		
-		
+		//注意在下sql 指令, 前後都依定要" 加上空白鍵 "要不然很容易莫名抓不到錯誤!!!
+		sql = sql+" ORDER BY "+productQueryParams.getOrderBy()+" "+productQueryParams.getSort();
+		//在此處不用使用if判斷式是因為在controller層已有先使用defaultValue定義其本身定不會為null
 		List<Product> productList = namedParameterJdbcTemplate.query(sql, map, new ProductRowMapper());
 		
 		return productList;

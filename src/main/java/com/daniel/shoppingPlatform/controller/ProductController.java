@@ -33,13 +33,19 @@ public class ProductController {
 	@GetMapping("/products")
 	public ResponseEntity<List<Product>> getProducts(
 				@RequestParam(required = false) ProductCategory category,
-				@RequestParam(required = false) String search){
+				@RequestParam(required = false) String search,
+				@RequestParam(defaultValue = "created_date") String orderBy, 
+				@RequestParam(defaultValue = "desc") String sort 
+				){
 		//加上required = false是因為若使用者沒有填寫所要的category, 則會自動判定為全選, 若沒加上
 		//required = false, 則會出現404 notFound, 此方法"常用"需複習!!!(4-7 no.1)
 		
 		ProductQueryParams productQueryParams =new ProductQueryParams();
 		productQueryParams.setCategory(category);
 		productQueryParams.setSearch(search);
+		productQueryParams.setOrderBy(orderBy);
+		productQueryParams.setSort(sort);
+		
 		List<Product> productList = productService.getProducts(productQueryParams);
 		
 //		使用了productQueryParams之後不論有多少個條件要篩選, 直接塞到productQueryParams裡面就好, 不用再一個個去改controller, service, dao層的get參數
