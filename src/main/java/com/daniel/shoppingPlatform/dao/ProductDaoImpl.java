@@ -13,9 +13,9 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
-import com.daniel.shoppingPlatform.constant.ProductCategory;
 import com.daniel.shoppingPlatform.model.Product;
 
+import dto.ProductQueryParams;
 import dto.ProductRequest;
 import rowmapper.ProductRowMapper;
 
@@ -27,7 +27,7 @@ public class ProductDaoImpl implements ProductDao {
 	
 
 	@Override
-	public List<Product> getProducts(ProductCategory category, String search) {
+	public List<Product> getProducts(ProductQueryParams productQueryParams) {
 		
 		// 1=1用途: 用於sql
 		String sql = "SELECT product_id, product_name, category, image_url, price, stock, description, "+
@@ -35,14 +35,16 @@ public class ProductDaoImpl implements ProductDao {
 		
 		Map<String, Object> map = new HashMap<>();
 		
-		if(category != null) {
+		if(productQueryParams.getCategory() != null) {
 			sql = sql + " AND category = :category";
-			map.put("category", category.name());
+			map.put("category", productQueryParams.getCategory().name());
+			//map.put("category", category.name()); 未將刪選條件塞入ProductQueryParams中的取值寫法
 			//Enum類型呼叫name方法= 使enum變成string類型
 		}
-		if(search != null) {
+		if(productQueryParams.getSearch() != null) {
 			sql = sql + " AND product_name LIKE :search";
-			map.put("search", "%"+search+"%");
+			map.put("search", "%"+productQueryParams.getSearch()+"%");
+			//map.put("search", "%"+search+"%");
 			//加上%在前ex: 代表在資料庫中, "最後"有接上蘋果兩字的, 就是目標資料(％蘋果), 前後都加代表整個資料有蘋果就是目標資料
 		}
 		

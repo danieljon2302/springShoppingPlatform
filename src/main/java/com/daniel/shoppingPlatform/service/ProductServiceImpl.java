@@ -5,10 +5,10 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.daniel.shoppingPlatform.constant.ProductCategory;
 import com.daniel.shoppingPlatform.dao.ProductDao;
 import com.daniel.shoppingPlatform.model.Product;
 
+import dto.ProductQueryParams;
 import dto.ProductRequest;
 @Component
 public class ProductServiceImpl implements ProductService {
@@ -17,9 +17,9 @@ public class ProductServiceImpl implements ProductService {
 	private ProductDao productDao;
 	
 	@Override
-	public List<Product> getProducts(ProductCategory category, String search) {
+	public List<Product> getProducts(ProductQueryParams productQueryParams) {
 		
-		return productDao.getProducts(category, search);
+		return productDao.getProducts(productQueryParams);
 	}
 	
 	@Override
