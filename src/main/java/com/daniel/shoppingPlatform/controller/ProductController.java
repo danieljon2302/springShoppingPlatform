@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,7 +24,11 @@ import com.daniel.shoppingPlatform.service.ProductService;
 import dto.ProductQueryParams;
 import dto.ProductRequest;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import util.Page;
 
+@Validated
 @RestController
 public class ProductController {
 	
@@ -31,12 +36,19 @@ public class ProductController {
 	private ProductService productService;
 	
 	@GetMapping("/products")
-	public ResponseEntity<List<Product>> getProducts(
+	public ResponseEntity<Page<Product>> getProducts(
+				//filter
 				@RequestParam(required = false) ProductCategory category,
 				@RequestParam(required = false) String search,
+				//排序
 				@RequestParam(defaultValue = "created_date") String orderBy, 
-				@RequestParam(defaultValue = "desc") String sort 
+				@RequestParam(defaultValue = "desc") String sort, 
+				//分頁
+				@RequestParam(defaultValue = "10") @Max(1000) @Min(0) Integer limit,
+				@RequestParam(defaultValue = "0") @Min(0) Integer offset
 				){
+		//sql語法中, LIMIT限制取幾筆資料, OFFSET跳過幾筆
+		//加上@mac與@min時, 須在class上加上@Validated才會生效
 		//加上required = false是因為若使用者沒有填寫所要的category, 則會自動判定為全選, 若沒加上
 		//required = false, 則會出現404 notFound, 此方法"常用"需複習!!!(4-7 no.1)
 		
@@ -45,15 +57,59 @@ public class ProductController {
 		productQueryParams.setSearch(search);
 		productQueryParams.setOrderBy(orderBy);
 		productQueryParams.setSort(sort);
-		
+		productQueryParams.setLimit(limit);
+		productQueryParams.setOffset(offset);
+		//取得product list
 		List<Product> productList = productService.getProducts(productQueryParams);
 		
 //		使用了productQueryParams之後不論有多少個條件要篩選, 直接塞到productQueryParams裡面就好, 不用再一個個去改controller, service, dao層的get參數
 //		List<Product> productList = productService.getProducts(category, search);
+		//取得product總數
+		Integer total = productService.countProduct(productQueryParams);
+		//分頁
+		Page<Product> page = new Page<>();
+		page.setLimit(limit);
+		page.setOffset(offset);
+		page.setTotal(total);
+		page.setResult(productList);
 		
-		return ResponseEntity.status(HttpStatus.OK).body(productList);
+		return ResponseEntity.status(HttpStatus.OK).body(page);
 		
 	}
+	
+//	@GetMapping("/products")
+//	public ResponseEntity<List<Product>> getProducts(
+//				//filter
+//				@RequestParam(required = false) ProductCategory category,
+//				@RequestParam(required = false) String search,
+//				//排序
+//				@RequestParam(defaultValue = "created_date") String orderBy, 
+//				@RequestParam(defaultValue = "desc") String sort, 
+//				//分頁
+//				@RequestParam(defaultValue = "10") @Max(1000) @Min(0) Integer limit,
+//				@RequestParam(defaultValue = "0") @Min(0) Integer offset
+//				){
+//		//sql語法中, LIMIT限制取幾筆資料, OFFSET跳過幾筆
+//		//加上@mac與@min時, 須在class上加上@Validated才會生效
+//		//加上required = false是因為若使用者沒有填寫所要的category, 則會自動判定為全選, 若沒加上
+//		//required = false, 則會出現404 notFound, 此方法"常用"需複習!!!(4-7 no.1)
+//		
+//		ProductQueryParams productQueryParams =new ProductQueryParams();
+//		productQueryParams.setCategory(category);
+//		productQueryParams.setSearch(search);
+//		productQueryParams.setOrderBy(orderBy);
+//		productQueryParams.setSort(sort);
+//		productQueryParams.setLimit(limit);
+//		productQueryParams.setOffset(offset);
+//		
+//		List<Product> productList = productService.getProducts(productQueryParams);
+//		
+////		使用了productQueryParams之後不論有多少個條件要篩選, 直接塞到productQueryParams裡面就好, 不用再一個個去改controller, service, dao層的get參數
+////		List<Product> productList = productService.getProducts(category, search);
+//		
+//		return ResponseEntity.status(HttpStatus.OK).body(productList);
+//		
+//	}
 	
 	@GetMapping("/products/{productId}")
 	public ResponseEntity<Product> getProduct(@PathVariable Integer productId){
