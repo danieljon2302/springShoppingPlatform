@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Component;
+import org.springframework.util.DigestUtils;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.daniel.shoppingPlatform.dao.UserDao;
@@ -34,6 +35,10 @@ public class UserServiceImpl implements UserService {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
 		}
 		
+		//使用h5 hash加密password
+		String hashPassword = DigestUtils.md5DigestAsHex(userRegisterRequest.getPassword().getBytes());
+		userRegisterRequest.setPassword(hashPassword);
+		
 		return userDao.createUser(userRegisterRequest);
 	}
 
@@ -46,19 +51,29 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public User login(UserLoginRequest userLoginRequest) {
 		
-	User user= userDao.getUserByEmail(userLoginRequest.getEmail());
+		User user= userDao.getUserByEmail(userLoginRequest.getEmail());
 	
-	if(user == null) {
-		log.warn("該email {} 尚未註冊", userLoginRequest.getEmail());
-		throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-	}
-	if(user.getPassword().equals(userLoginRequest.getPassword())) {
-		return user;
-	}else {
-		log.warn("email {} 密碼有誤", userLoginRequest.getPassword());
-		throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-	}
+		if(user == null) {
+			log.warn("該email {} 尚未註冊", userLoginRequest.getEmail());	
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+		}	
+		//註冊時已將密碼加密儲存於DB中, 故資料庫檢查的時候也會是用md5 hash做檢查
+		String hashPassword = DigestUtils.md5DigestAsHex(userLoginRequest.getPassword().getBytes());
+	
+		if(user.getPassword().equals(hashPassword)) {
+			return user;
+		}else {
+			log.warn("email {} 密碼有誤", userLoginRequest.getEmail());
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+		}
+// 以下為“未經驗證程序”之儲存密碼方式
+//	if(user.getPassword().equals(userLoginRequest.getPassword())) {
+//		return user;
+//	}else {
+//		log.warn("email {} 密碼有誤", userLoginRequest.getEmail());
+//		throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+//	}
 		
-	}
+		}
 	
 }
