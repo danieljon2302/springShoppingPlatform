@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.daniel.shoppingPlatform.model.Order;
 import com.daniel.shoppingPlatform.service.OrderService;
 
 import dto.CreateOrderRequest;
@@ -21,11 +22,13 @@ public class OrderController {
 	
 	@PostMapping("/users/{userId}/orders")
 	public ResponseEntity<?> createOrder(@PathVariable Integer userId,
-											@RequestBody @Valid CreateOrderRequest createOrderRequest){
+									@RequestBody @Valid CreateOrderRequest createOrderRequest){
 		
 		Integer orderId = orderService.createOrder(userId, createOrderRequest);
 		
-		return ResponseEntity.status(HttpStatus.CREATED).body(orderId);
+		Order order = orderService.getOrderById(orderId);
+		
+		return ResponseEntity.status(HttpStatus.CREATED).body(order);
 	}
 	
 }

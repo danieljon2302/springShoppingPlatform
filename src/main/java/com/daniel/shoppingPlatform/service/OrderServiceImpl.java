@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.daniel.shoppingPlatform.dao.OrderDao;
 import com.daniel.shoppingPlatform.dao.ProductDao;
+import com.daniel.shoppingPlatform.model.Order;
 import com.daniel.shoppingPlatform.model.OrderItem;
 import com.daniel.shoppingPlatform.model.Product;
 
@@ -54,6 +55,17 @@ public class OrderServiceImpl implements OrderService {
 		orderDao.createOrderItems(orderId, orderItemList);
 		
 		return orderId;
+	}
+
+	@Override
+	public Order getOrderById(Integer orderId) {
+		Order order = orderDao.getOrderById(orderId);
+		
+		List<OrderItem> orderItemList = orderDao.getOrderItemsByOrderId(orderId);
+		
+		order.setOrderItemList(orderItemList);
+		
+		return order;
 	}
 	
 }
