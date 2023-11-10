@@ -57,7 +57,7 @@ public class OrderServiceImpl implements OrderService {
 			
 			//檢查該product庫存是否存在/ 足夠
 			if (product == null) {
-				log.warn("商品 {} 不存在, buyItem.getQuantity()");
+				log.warn("商品 {} 不存在", buyItem.getProductId());
 				throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
 				
 			}else if (product.getStock() < buyItem.getQuantity()) {
