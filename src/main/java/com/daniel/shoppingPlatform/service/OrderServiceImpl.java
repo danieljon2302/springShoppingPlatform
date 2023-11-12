@@ -21,6 +21,7 @@ import com.daniel.shoppingPlatform.model.User;
 
 import dto.BuyItem;
 import dto.CreateOrderRequest;
+import dto.OrderQueryParams;
 
 @Component
 public class OrderServiceImpl implements OrderService {
@@ -98,6 +99,26 @@ public class OrderServiceImpl implements OrderService {
 		order.setOrderItemList(orderItemList);
 		
 		return order;
+	}
+
+	@Override
+	public Integer countOrder(OrderQueryParams orderQueryParams) {
+		
+		return orderDao.countOrder(orderQueryParams);
+	}
+
+	@Override
+	public List<Order> getOrders(OrderQueryParams orderQueryParams) {
+		
+		List<Order> orderList = orderDao.getOrders(orderQueryParams);
+		
+		for(Order order: orderList) {
+			List<OrderItem> orderItemList = orderDao.getOrderItemsByOrderId(order.getOrderId());
+			
+			order.setOrderItemList(orderItemList);
+		}
+		
+		return orderList;
 	}
 	
 }
